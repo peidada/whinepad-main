@@ -19,7 +19,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for='(item,index) in list' :key='item'>
+          <tr v-for='(item,index) in Searchlist' :key='item'>
             <td class='name'>{{item.name}}</td>
             <td class='year'>{{item.year}}</td>
             <td class='grape'>{{item.grape}}</td>
@@ -61,16 +61,17 @@ export default {
       search: ''
     }
   },
+  mounted () {
+    this.list = localStorage.getItem('list') ? JSON.parse(localStorage.getItem('list')) : []
+  },
   computed: {
     Searchlist () {
-      const arr = []
-      const vm = this
-      this.list.forEach(function (item) {
-        if (vm.search === item.name && vm.search !== '') {
-          arr.push(item)
-        }
+      const key = this.search
+      const shoppingList = this.list
+      return shoppingList.filter(function (item) {
+        // 此处fiter为javascript数组对象的一个方法，用于检测数值元素，并返回符合条件所有元素的数组
+        return item.name.toLowerCase().indexOf(key.toLowerCase()) !== -1
       })
-      return arr
     }
   },
   components: {
@@ -81,6 +82,7 @@ export default {
     handleAdd (val) {
       this.list.push(val)
       this.addActive = false
+      localStorage.setItem('list', JSON.stringify(this.list))
     },
     handleInfo (item) {
       this.info = item
@@ -98,11 +100,14 @@ export default {
     },
     edit (val) {
       this.list[this.index] = val
+      console.log(this.list[this.index])
+      localStorage.setItem('list', JSON.stringify(this.list))
       this.EditActive = false
     },
     del () {
       this.DeleteActive = false
-      this.List.splice(this.index, 1)
+      this.list.splice(this.index, 1)
+      localStorage.setItem('list', JSON.stringify(this.list))
     }
   }
 }
